@@ -1,0 +1,948 @@
+<!DOCTYPE html>
+<html lang="pt-PT">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Gamil - Painel de Controlo Operacional</title>
+    <style>
+        :root {
+            --primary: #2563eb; /* Azul Gamil */
+            --secondary: #64748b;
+            --bg-body: #f1f5f9;
+            --bg-card: #ffffff;
+            --border: #e2e8f0;
+            --text-dark: #0f172a;
+            --accent-orange: #f97316; /* Caldeira */
+            --accent-green: #10b981;  /* Ciclos/Sucesso */
+            --accent-red: #ef4444;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+            background-color: var(--bg-body);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            color: var(--text-dark);
+        }
+
+        /* Cabeçalho */
+        header {
+            width: 100%;
+            background: var(--bg-card);
+            padding: 25px 0;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.02);
+            position: relative;
+        }
+
+        .logo {
+            height: 50px;
+            margin-bottom: 15px;
+        }
+
+        .header-content h1 {
+            font-size: 1.8rem;
+            margin: 0;
+            color: var(--text-dark);
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .btn-voltar {
+            position: absolute;
+            top: 30px;
+            left: 5%;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 8px 14px;
+            border-radius: 6px;
+            color: var(--secondary);
+            text-decoration: none;
+            font-size: 14px;
+            font-weight: 600;
+            transition: 0.3s;
+        }
+
+        .btn-voltar:hover {
+            color: var(--primary);
+            border-color: var(--primary);
+        }
+
+        /* Menu de Abas (Tabs) */
+        .tabs-container {
+            display: flex;
+            width: 90%;
+            max-width: 1100px;
+            margin-top: 30px;
+            background: #e2e8f0;
+            padding: 6px;
+            border-radius: 12px;
+            gap: 5px;
+            box-sizing: border-box;
+        }
+
+        .tab-btn {
+            flex: 1;
+            background: none;
+            border: none;
+            padding: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--secondary);
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-dark);
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        .tab-btn.active {
+            background: var(--bg-card);
+            color: var(--primary);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        }
+
+        /* Área de Conteúdo */
+        .main-container {
+            width: 90%;
+            max-width: 1100px;
+            margin: 25px 0 80px 0;
+            box-sizing: border-box;
+        }
+
+        .tab-content {
+            display: none;
+            background: var(--bg-card);
+            padding: 40px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 25px rgba(0, 0, 0, 0.03);
+            animation: fadeIn 0.35s ease;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Elementos e Classes Compartilhadas */
+        h2 {
+            font-size: 1.4rem;
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-weight: 800;
+            border-left: 4px solid var(--primary);
+            padding-left: 12px;
+        }
+
+        .grid-layout {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--secondary);
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            background-color: #fcfcfc;
+            color: var(--text-dark);
+            font-size: 15px;
+            box-sizing: border-box;
+            transition: 0.3s;
+            margin-bottom: 15px;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+            border-color: var(--primary);
+        }
+
+        textarea {
+            height: 80px;
+            font-family: monospace;
+            resize: none;
+        }
+
+        .action-btn {
+            width: 100%;
+            color: white;
+            font-size: 1rem;
+            font-weight: 700;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            padding: 16px;
+            transition: 0.3s;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 10px;
+        }
+
+        .btn-blue { background: var(--primary); }
+        .btn-blue:hover { background: #1d4ed8; }
+        .btn-orange { background: var(--accent-orange); }
+        .btn-orange:hover { background: #ea580c; }
+
+        .resultados-box {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 25px;
+            border: 1px solid var(--border);
+            min-height: 380px;
+            box-sizing: border-box;
+        }
+
+        .res-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        .section-title {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--secondary);
+            text-transform: uppercase;
+            margin-bottom: 15px;
+            display: block;
+            border-bottom: 2px solid var(--border);
+            padding-bottom: 5px;
+        }
+
+        .erro { 
+            color: var(--accent-red); 
+            font-weight: bold; 
+            text-align: center;
+            background: #fef2f2;
+            padding: 12px;
+            border-radius: 8px;
+            border: 1px solid #fecaca;
+        }
+
+        /* Layouts de Coluna Única Otimizados */
+        .single-column-layout {
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        /* ========================================================
+           ABAS ESPECÍFICAS
+        ======================================================== */
+        /* 1. Peso Centrífuga */
+        .group-box {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid var(--border);
+        }
+        .group-title {
+            font-size: 11px;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 10px;
+            display: block;
+            text-transform: uppercase;
+        }
+        .peso-banner {
+            background: #eff6ff;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #dbeafe;
+            margin: 10px 0 20px 0;
+            text-align: center;
+        }
+        .peso-banner h3 {
+            margin: 5px 0 0 0;
+            font-size: 20px;
+            color: var(--primary);
+            font-weight: 800;
+        }
+        .bloco-branco {
+            background: #f0fdf4;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #bbf7d0;
+            margin-top: 20px;
+        }
+        .total-destaque {
+            font-size: 1.4rem;
+            color: var(--accent-green) !important;
+            font-weight: 900;
+        }
+
+        /* 2. Tempo Caldeira */
+        #tab-caldeira input:focus {
+            border-color: var(--accent-orange);
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+        .result-caldeira {
+            margin-top: 25px;
+            padding: 20px;
+            background: #fff7ed;
+            border-radius: 12px;
+            border-left: 4px solid var(--accent-orange);
+            display: none;
+        }
+        .result-caldeira p {
+            margin: 10px 0;
+            font-size: 15px;
+            display: flex;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            padding-bottom: 5px;
+        }
+        .status-msg {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        /* 3. Tempo Centrífuga (Ciclos) */
+        .ciclos-container {
+            background: var(--bg-card);
+            padding: 15px;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+        .row-header {
+            display: grid;
+            grid-template-columns: 100px 1fr 1fr 90px;
+            gap: 15px;
+            padding: 12px 10px;
+            background: #f1f5f9;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--secondary);
+            text-transform: uppercase;
+        }
+        .ciclo-row {
+            display: grid;
+            grid-template-columns: 100px 1fr 1fr 90px;
+            align-items: center;
+            padding: 8px 10px;
+            border-bottom: 1px solid #f1f5f9;
+            gap: 15px;
+        }
+        .label-tag {
+            font-size: 10px;
+            font-weight: 700;
+            color: var(--primary);
+            background: #eff6ff;
+            padding: 4px 8px;
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid #dbeafe;
+        }
+        .ciclo-row input[type="time"] { margin-bottom: 0; padding: 8px; font-size: 14px; }
+        .minutes-span { font-weight: 700; text-align: right; font-size: 14px; color: var(--secondary); }
+        .minutes-span.active { color: var(--accent-green); }
+        .add-button {
+            margin: 20px 0 0 0;
+            padding: 12px;
+            background: var(--bg-card);
+            color: var(--primary);
+            border: 2px dashed var(--border);
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            width: 100%;
+            transition: 0.2s;
+        }
+        .add-button:hover { border-color: var(--primary); background: #eff6ff; }
+        .total-footer-fixed {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            color: white;
+            padding: 14px 35px;
+            border-radius: 100px;
+            font-size: 1.1rem;
+            font-weight: 700;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            z-index: 100;
+            display: none;
+            gap: 10px;
+            align-items: center;
+        }
+        .total-footer-fixed span { color: var(--accent-green); font-size: 1.3rem; }
+
+        /* 4. Zinco Aderido */
+        .result-zinco {
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #f0f7ff;
+            border-radius: 12px;
+            border-left: 4px solid var(--primary);
+            display: none;
+        }
+        .result-zinco p {
+            margin: 8px 0;
+            font-size: 0.95rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .valor-destaque-zinco { font-weight: 800; color: var(--primary); font-size: 1.4rem; }
+        .coef-info { color: var(--secondary); font-family: monospace; font-weight: bold; }
+        .footer-info { margin-top: 20px; text-align: center; font-size: 0.75rem; color: var(--secondary); font-weight: 600; }
+
+        @media (max-width: 850px) {
+            .grid-layout { grid-template-columns: 1fr; gap: 20px; }
+            .tab-content { padding: 25px; }
+            .tabs-container { flex-direction: column; }
+            .btn-voltar { position: static; margin-bottom: 15px; }
+            .row-header { display: none; }
+            .ciclo-row { grid-template-columns: 1fr 1fr 60px; gap: 8px; }
+            .label-tag { display: none; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="btn-voltar">⬅ Voltar</a>
+        <img src="img/logo.png" alt="Gamil Logo" class="logo" onerror="this.src='./site-calculo-peso/img/logo.png'">
+        <div class="header-content">
+            <h1>Controlo Operacional Gamil</h1>
+        </div>
+    </header>
+
+    <!-- Barra de Navegação Exclusiva por Abas -->
+    <div class="tabs-container">
+        <button class="tab-btn active" onclick="switchTab('tab-centrifuga')">⚙️ Peso Centrífuga</button>
+        <button class="tab-btn" onclick="switchTab('tab-caldeira')">🔥 Tempo Caldeira</button>
+        <button class="tab-btn" onclick="switchTab('tab-ciclos')">⏱️ Tempo Centrífuga</button>
+        <button class="tab-btn" onclick="switchTab('tab-zinco')">🔗 Zinco Aderido</button>
+    </div>
+
+    <div class="main-container">
+
+        <!-- ABA 1: PESO CENTRÍFUGA -->
+        <div id="tab-centrifuga" class="tab-content active">
+            <h2>Cálculo de Centrífuga - Por Tipo de Lote</h2>
+            <div class="grid-layout">
+                <div class="inputs-side">
+                    <div class="group-box">
+                        <span class="group-title">Lotes Cesta Antiga (255kg)</span>
+                        <label for="numCestasAntigas">Quantidade de Cestas</label>
+                        <input type="number" id="numCestasAntigas" placeholder="Ex: 4" oninput="atualizarResumoCent()" />
+                        
+                        <label for="lotesAntigas">Pesos em Negro (Separados por vírgula)</label>
+                        <textarea id="lotesAntigas" placeholder="Ex: 850, 845, 860..."></textarea>
+                    </div>
+
+                    <div class="group-box">
+                        <span class="group-title">Lotes Cesta em Barra (440kg)</span>
+                        <label for="numCestasNovas">Quantidade de Cestas</label>
+                        <input type="number" id="numCestasNovas" placeholder="Ex: 2" oninput="atualizarResumoCent()" />
+                        
+                        <label for="lotesNovas">Pesos em Negro (Separados por vírgula)</label>
+                        <textarea id="lotesNovas" placeholder="Ex: 1120, 1150..."></textarea>
+                    </div>
+
+                    <label for="fatorZinco">Fator de Zinco</label>
+                    <input type="number" id="fatorZinco" value="1.035" step="0.001">
+
+                    <div class="peso-banner">
+                        <span style="font-size: 11px; text-transform: uppercase; color: var(--secondary); font-weight: 700;">Tara Total das Cestas</span>
+                        <h3><span id="pesoTotalTara">0</span> <small style="font-size: 12px;">kg</small></h3>
+                    </div>
+
+                    <button class="action-btn btn-blue" onclick="calcularCentrifuga()">Executar Cálculo</button>
+                </div>
+
+                <div class="results-side">
+                    <div class="resultados-box" id="resultadoCentrifuga">
+                        <div style="text-align: center; color: var(--secondary); margin-top: 150px; font-size: 0.9rem;">
+                            Aguardando dados dos lotes...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ABA 2: TEMPO CALDEIRA -->
+        <div id="tab-caldeira" class="tab-content">
+            <div class="single-column-layout">
+                <h2 style="border-left-color: var(--accent-orange);">Controle Caldeira</h2>
+
+                <div class="input-group">
+                    <label>Hora Inicial</label>
+                    <input type="time" id="horaInicial" step="1" value="08:00:00">
+                </div>
+
+                <div class="input-group">
+                    <label>Hora Final</label>
+                    <input type="time" id="horaFinal" step="1" value="00:00:00">
+                </div>
+
+                <div class="input-group">
+                    <label>Incidências (Horas decimais, ex: 8.77)</label>
+                    <input type="number" id="incidencias" step="0.01" placeholder="0.00">
+                </div>
+
+                <button class="action-btn btn-orange" onclick="calcularCaldeira()">Calcular Tempos</button>
+
+                <div id="resultadoCaldeira" class="result-caldeira"></div>
+            </div>
+        </div>
+
+        <!-- ABA 3: TEMPO CENTRÍFUGA (CICLOS COPIADO) -->
+        <div id="tab-ciclos" class="tab-content">
+            <h2>Controle de Ciclos Centrífuga</h2>
+            <div class="ciclos-container">
+                <div class="row-header">
+                    <span>Referência</span>
+                    <span>Início Ciclo</span>
+                    <span>Fim Ciclo</span>
+                    <span style="text-align: right;">Tempo</span>
+                </div>
+                <div id="timeContainer"></div>
+            </div>
+            <button class="add-button" onclick="addNewRow()">
+                <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                ADICIONAR NOVO CICLO
+            </button>
+        </div>
+
+        <!-- ABA 4: ZINCO ADERIDO -->
+        <div id="tab-zinco" class="tab-content">
+            <div class="single-column-layout">
+                <h2>Zinco Aderido</h2>
+                
+                <div class="input-group">
+                    <label>Espessura da peça (mm)</label>
+                    <input type="number" id="espessuraZinco" step="0.1" placeholder="Ex: 2.5">
+                </div>
+
+                <div class="input-group">
+                    <label>Micragem Alvo (µm)</label>
+                    <input type="number" id="micragemZinco" placeholder="Ex: 80">
+                </div>
+
+                <div class="input-group">
+                    <label>Peso em negro (kg)</label>
+                    <input type="number" id="pesoNegroZinco" placeholder="Ex: 1500">
+                </div>
+
+                <button class="action-btn btn-blue" onclick="calcularZinco()">Calcular Zinco</button>
+
+                <div id="resultadoZinco" class="result-zinco"></div>
+                
+                <div class="footer-info">
+                    TABELA OFICIAL GAMIL • 0.8mm a 50mm
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Footer Flutuante para os Minutos de Ciclo -->
+    <div class="total-footer-fixed" id="totalMinutesFooter">
+        Total Acumulado: <span id="totalMinutesSpan">0 minutos</span>
+    </div>
+
+    <script>
+        // Gerenciador de Abas Internas
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            
+            document.getElementById(tabId).classList.add('active');
+            event.currentTarget.classList.add('active');
+
+            // Só mostra o footer fixo de minutos se estiver na aba de ciclos
+            const footer = document.getElementById("totalMinutesFooter");
+            if (tabId === 'tab-ciclos') {
+                footer.style.display = "flex";
+            } else {
+                footer.style.display = "none";
+            }
+        }
+
+        // ========================================================
+        // ABA 1: PESO CENTRÍFUGA
+        // ========================================================
+        function atualizarResumoCent() {
+            const nAntigas = parseFloat(document.getElementById('numCestasAntigas').value) || 0;
+            const nNovas = parseFloat(document.getElementById('numCestasNovas').value) || 0;
+            const totalTara = (nAntigas * 255) + (nNovas * 440);
+            document.getElementById('pesoTotalTara').innerText = totalTara.toFixed(2);
+        }
+
+        function somarPesosCent(texto) {
+            if (!texto.trim()) return 0;
+            return texto.split(',').map(s => {
+                const val = parseFloat(s.trim().replace(',', '.'));
+                return isNaN(val) ? 0 : val;
+            }).reduce((acc, val) => acc + val, 0);
+        }
+
+        function calcularCentrifuga() {
+            const nAntigas = parseFloat(document.getElementById('numCestasAntigas').value) || 0;
+            const nNovas = parseFloat(document.getElementById('numCestasNovas').value) || 0;
+            const factor = parseFloat(document.getElementById('fatorZinco').value) || 1;
+
+            const pesosAntigasRaw = document.getElementById('lotesAntigas').value;
+            const pesosNovasRaw = document.getElementById('lotesNovas').value;
+
+            const totalNegroAntigas = somarPesosCent(pesosAntigasRaw);
+            const taraAntigas = nAntigas * 255;
+            const liquidoAntigas = Math.max(0, totalNegroAntigas - taraAntigas);
+
+            const totalNegroNovas = somarPesosCent(pesosNovasRaw);
+            const taraNovas = nNovas * 440;
+            const liquidoNovas = Math.max(0, totalNegroNovas - taraNovas);
+
+            const totalNegroGeral = totalNegroAntigas + totalNegroNovas;
+            const totalTaraGeral = taraAntigas + taraNovas;
+            const totalLiquidoGeral = liquidoAntigas + liquidoNovas;
+            
+            if (totalLiquidoGeral === 0 && (pesosAntigasRaw || pesosNovasRaw)) {
+                document.getElementById('resultadoCentrifuga').innerHTML = "<p class='erro'>⚠️ Peso das cestas maior que o peso informado ou campos vazios.</p>";
+                return;
+            }
+
+            const pesoBrancoEstimado = totalLiquidoGeral * factor;
+            const pesoBrancoFinal = pesoBrancoEstimado + totalTaraGeral;
+
+            let html = `<span class="section-title">Detalhamento por Modelo</span>`;
+
+            if (nAntigas > 0 || totalNegroAntigas > 0) {
+                html += `
+                <div style="margin-bottom: 15px;">
+                    <small style="color:var(--primary); font-weight:bold;">CESTA ANTIGA (255kg)</small>
+                    <div class="res-item"><span>Total Negro:</span> <span>${totalNegroAntigas.toFixed(2)} kg</span></div>
+                    <div class="res-item"><span>Tara (${nAntigas} unid):</span> <span>-${taraAntigas.toFixed(2)} kg</span></div>
+                    <div class="res-item"><span>Líquido Negro:</span> <strong>${liquidoAntigas.toFixed(2)} kg</strong></div>
+                </div>`;
+            }
+
+            if (nNovas > 0 || totalNegroNovas > 0) {
+                html += `
+                <div style="margin-bottom: 15px;">
+                    <small style="color:var(--primary); font-weight:bold;">CESTA EM BARRA (440kg)</small>
+                    <div class="res-item"><span>Total Negro:</span> <span>${totalNegroNovas.toFixed(2)} kg</span></div>
+                    <div class="res-item"><span>Tara (${nNovas} unid):</span> <span>-${taraNovas.toFixed(2)} kg</span></div>
+                    <div class="res-item"><span>Líquido Negro:</span> <strong>${liquidoNovas.toFixed(2)} kg</strong></div>
+                </div>`;
+            }
+
+            html += `
+                <span class="section-title">Resumo Geral (Negro)</span>
+                <div class="res-item"><span>Peso Bruto Total:</span> <span>${totalNegroGeral.toFixed(2)} kg</span></div>
+                <div class="res-item"><span>Tara Total Cestas:</span> <span>${totalTaraGeral.toFixed(2)} kg</span></div>
+                <div class="res-item"><span><strong>Líquido Total Negro:</strong></span> <strong>${totalLiquidoGeral.toFixed(2)} kg</strong></div>
+
+                <div class="bloco-branco">
+                    <span class="section-title" style="border-color:#bbf7d0">Estimativa Final (Branco)</span>
+                    <div class="res-item"><span>Fator Zinco:</span> <span>${factor.toFixed(3)}</span></div>
+                    <div class="res-item"><span>Líquido Estimado:</span> <span>${pesoBrancoEstimado.toFixed(2)} kg</span></div>
+                    <div class="res-item" style="margin-top:10px; padding-top:10px; border-top: 1px solid #bbf7d0;">
+                        <span><strong>PESO TOTAL FINAL:</strong></span> 
+                        <span class="total-destaque">${pesoBrancoFinal.toFixed(2)} kg</span>
+                    </div>
+                </div>
+            `;
+            document.getElementById('resultadoCentrifuga').innerHTML = html;
+        }
+
+        // ========================================================
+        // ABA 2: TEMPO CALDEIRA
+        // ========================================================
+        function toSecondsCaldeira(t) {
+            const [h, m, s] = t.split(":").map(Number);
+            return h * 3600 + (m || 0) * 60 + (s || 0);
+        }
+
+        function formatTimeCaldeira(sec) {
+            sec = sec % (24*3600);
+            const h = Math.floor(sec / 3600);
+            const m = Math.floor((sec % 3600) / 60);
+            const s = sec % 60;
+            return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        }
+
+        function calcularCaldeira() {
+            const hI = document.getElementById("horaInicial").value;
+            const hF = document.getElementById("horaFinal").value;
+            const valIncid = document.getElementById("incidencias").value;
+            const incid = parseFloat(valIncid) * 3600;
+
+            if (!hI || !hF || isNaN(incid)) {
+                alert("Por favor, preencha todos os campos.");
+                return;
+            }
+
+            let ini = toSecondsCaldeira(hI);
+            let fim = toSecondsCaldeira(hF);
+
+            if (fim < ini) fim += 24 * 3600;
+
+            let total = fim - ini;
+            let liquido = total - incid;
+
+            let extra = false;
+            let extraInicio = "";
+            let extraFim = "";
+
+            const turno1Ini = toSecondsCaldeira("08:00:00");
+            const turno2Fim = toSecondsCaldeira("00:00:00") + 24*3600;
+
+            if (ini < turno1Ini) {
+                extra = true;
+                extraInicio = formatTimeCaldeira(ini);
+                extraFim = formatTimeCaldeira(turno1Ini);
+            }
+
+            if (fim > turno2Fim) {
+                extra = true;
+                extraInicio = formatTimeCaldeira(turno2Fim % (24*3600));
+                extraFim = formatTimeCaldeira(fim % (24*3600));
+            }
+
+            const resDiv = document.getElementById("resultadoCaldeira");
+            resDiv.style.display = "block";
+            resDiv.innerHTML = `
+                <p>Período: <span>${hI} ➔ ${hF}</span></p>
+                <p>Diferença Total: <strong>${(total/3600).toFixed(2).replace('.', ',')} h</strong></p>
+                <p>Incidências: <strong>${(incid/3600).toFixed(2).replace('.', ',')} h</strong></p>
+                <p style="border:none; font-size:18px; margin-top:15px; font-weight: 800;">Tempo Líquido: <strong>${(liquido/3600).toFixed(2).replace('.', ',')} h</strong></p>
+                
+                <div class="status-msg" style="background: ${extra ? '#fef2f2' : '#f0fdf4'}; 
+                                             color: ${extra ? 'var(--accent-red)' : 'var(--accent-green)'};
+                                             border: 1px solid ${extra ? '#fecaca' : '#bbf7d0'};">
+                    ${extra ? `⚠ EXTRA: ${extraInicio} às ${extraFim}` : '✓ Turno Normal'}
+                </div>
+            `;
+        }
+
+        // ========================================================
+        // ABA 3: TEMPO CENTRÍFUGA (CICLOS)
+        // ========================================================
+        const containerCiclos = document.getElementById("timeContainer");
+        const totalDisplayCiclos = document.getElementById("totalMinutesSpan");
+        let rowCount = 15;
+
+        function createCicloRow(index) {
+            const row = document.createElement("div");
+            row.className = "ciclo-row";
+            row.innerHTML = `
+                <div class="label-tag">CICLO ${index + 1}</div>
+                <input type="time" id="start-${index}" onchange="updateDiffCiclo(${index})">
+                <input type="time" id="end-${index}" onchange="updateDiffCiclo(${index})">
+                <span class="minutes-span" id="diff-${index}">0 min</span>
+            `;
+            containerCiclos.appendChild(row);
+        }
+
+        function updateDiffCiclo(index) {
+            const start = document.getElementById(`start-${index}`).value;
+            const end = document.getElementById(`end-${index}`).value;
+            const diffSpan = document.getElementById(`diff-${index}`);
+
+            if (start && end) {
+                const [h1, m1] = start.split(':').map(Number);
+                const [h2, m2] = end.split(':').map(Number);
+                let diff = (h2 * 60 + m2) - (h1 * 60 + m1);
+                if (diff < 0) diff += 1440;
+
+                diffSpan.textContent = `${diff} min`;
+                diffSpan.classList.add('active');
+            } else {
+                diffSpan.textContent = "0 min";
+                diffSpan.classList.remove('active');
+            }
+            updateTotalCiclos();
+        }
+
+        function updateTotalCiclos() {
+            let total = 0;
+            document.querySelectorAll('.minutes-span').forEach(span => {
+                total += parseInt(span.textContent) || 0;
+            });
+            totalDisplayCiclos.textContent = `${total} minutos`;
+        }
+
+        function addNewRow() {
+            createCicloRow(rowCount);
+            rowCount++;
+        }
+
+        // Inicializa as 15 linhas de ciclos padrão
+        for (let i = 0; i < rowCount; i++) {
+            createCicloRow(i);
+        }
+
+        // ========================================================
+        // ABA 4: ZINCO ADERIDO
+        // ========================================================
+        const tabelaZinco = {
+            0.8: { 60: 0.103328, 75: 0.137771, 80: 0.183694, 85: 0.195175, 90: 0.206656, 95: 0.218137, 100: 0.229618 },
+            1.0: { 60: 0.110217, 75: 0.137771, 80: 0.146955, 85: 0.156140, 90: 0.165325, 95: 0.174510, 100: 0.183694 },
+            1.1: { 60: 0.075148, 75: 0.100197, 80: 0.133596, 85: 0.141946, 90: 0.150295, 95: 0.158645, 100: 0.166995 },
+            1.2: { 60: 0.091847, 75: 0.114809, 80: 0.122463, 85: 0.130117, 90: 0.137771, 95: 0.145425, 100: 0.153079 },
+            1.5: { 60: 0.073478, 75: 0.091847, 80: 0.097970, 85: 0.104094, 90: 0.110217, 95: 0.116340, 100: 0.122463 },
+            2.0: { 60: 0.055108, 75: 0.068885, 80: 0.073478, 85: 0.078070, 90: 0.082662, 95: 0.087255, 100: 0.091847 },
+            3.0: { 60: 0.036739, 75: 0.045924, 80: 0.048985, 85: 0.052047, 90: 0.055108, 95: 0.058170, 100: 0.061231 },
+            4.0: { 60: 0.027554, 75: 0.034443, 80: 0.036739, 85: 0.039035, 90: 0.041331, 95: 0.043627, 100: 0.045924 },
+            5.0: { 60: 0.022043, 75: 0.027554, 80: 0.029391, 85: 0.031228, 90: 0.033065, 95: 0.034902, 100: 0.036739 },
+            6.0: { 60: 0.018369, 75: 0.022962, 80: 0.024493, 85: 0.026023, 90: 0.027554, 95: 0.029085, 100: 0.030616 },
+            7.0: { 60: 0.015745, 75: 0.019682, 80: 0.020994, 85: 0.022306, 90: 0.023618, 95: 0.024930, 100: 0.026242 },
+            8.0: { 60: 0.013777, 75: 0.017221, 80: 0.018369, 85: 0.019518, 90: 0.020666, 95: 0.021814, 100: 0.022962 },
+            9.0: { 60: 0.012246, 75: 0.015308, 80: 0.016328, 85: 0.017349, 90: 0.018369, 95: 0.019390, 100: 0.020410 },
+            10.0: { 60: 0.011022, 75: 0.013777, 80: 0.014696, 85: 0.015614, 90: 0.016532, 95: 0.017451, 100: 0.018369 },
+            11.0: { 60: 0.010020, 75: 0.012525, 80: 0.013360, 85: 0.014195, 90: 0.015030, 95: 0.015865, 100: 0.016699 },
+            12.0: { 60: 0.009185, 75: 0.011481, 80: 0.012246, 85: 0.013012, 90: 0.013777, 95: 0.014542, 100: 0.015308 },
+            13.0: { 60: 0.008478, 75: 0.010598, 80: 0.011304, 85: 0.012011, 90: 0.012717, 95: 0.013424, 100: 0.014130 },
+            14.0: { 60: 0.007873, 75: 0.009841, 80: 0.010497, 85: 0.011153, 90: 0.011809, 95: 0.012465, 100: 0.013121 },
+            15.0: { 60: 0.007348, 75: 0.009185, 80: 0.009797, 85: 0.010409, 90: 0.011022, 95: 0.011634, 100: 0.012246 },
+            16.0: { 60: 0.006889, 75: 0.008611, 80: 0.009185, 85: 0.009759, 90: 0.010333, 95: 0.010907, 100: 0.011481 },
+            17.0: { 60: 0.006483, 75: 0.008104, 80: 0.008644, 85: 0.009185, 90: 0.009725, 95: 0.010265, 100: 0.010806 },
+            18.0: { 60: 0.006123, 75: 0.007654, 80: 0.008164, 85: 0.008674, 90: 0.009185, 95: 0.009695, 100: 0.010205 },
+            19.0: { 60: 0.005801, 75: 0.007251, 80: 0.007734, 85: 0.008218, 90: 0.008701, 95: 0.009185, 100: 0.009668 },
+            20.0: { 60: 0.005511, 75: 0.006889, 80: 0.007348, 85: 0.007807, 90: 0.008266, 95: 0.008725, 100: 0.009185 },
+            21.0: { 60: 0.005248, 75: 0.006561, 80: 0.006998, 85: 0.007435, 90: 0.007873, 95: 0.008310, 100: 0.008747 },
+            22.0: { 60: 0.005010, 75: 0.006262, 80: 0.006680, 85: 0.007097, 90: 0.007515, 95: 0.007932, 100: 0.008350 },
+            23.0: { 60: 0.004792, 75: 0.005990, 80: 0.006389, 85: 0.006789, 90: 0.007188, 95: 0.007587, 100: 0.007987 },
+            24.0: { 60: 0.004592, 75: 0.005740, 80: 0.006123, 85: 0.006506, 90: 0.006889, 95: 0.007271, 100: 0.007654 },
+            25.0: { 60: 0.004409, 75: 0.005511, 80: 0.005878, 85: 0.006246, 90: 0.006613, 95: 0.006980, 100: 0.007348 },
+            26.0: { 60: 0.004239, 75: 0.005299, 80: 0.005652, 85: 0.006005, 90: 0.006359, 95: 0.006712, 100: 0.007065 },
+            27.0: { 60: 0.004082, 75: 0.005103, 80: 0.005443, 85: 0.005783, 90: 0.006123, 95: 0.006463, 100: 0.006803 },
+            28.0: { 60: 0.003936, 75: 0.004920, 80: 0.005248, 85: 0.005576, 90: 0.005904, 95: 0.006232, 100: 0.006561 },
+            29.0: { 60: 0.003801, 75: 0.004751, 80: 0.005067, 85: 0.005384, 90: 0.005701, 95: 0.006018, 100: 0.006334 },
+            30.0: { 60: 0.003674, 75: 0.004592, 80: 0.004899, 85: 0.005205, 90: 0.005511, 95: 0.005817, 100: 0.006123 },
+            31.0: { 60: 0.003555, 75: 0.004444, 80: 0.004740, 85: 0.005037, 90: 0.005333, 95: 0.005629, 100: 0.005926 },
+            32.0: { 60: 0.003444, 75: 0.004305, 80: 0.004592, 85: 0.004879, 90: 0.005166, 95: 0.005453, 100: 0.005740 },
+            33.0: { 60: 0.003340, 75: 0.004175, 80: 0.004453, 85: 0.004732, 90: 0.005010, 95: 0.005288, 100: 0.005566 },
+            34.0: { 60: 0.003242, 75: 0.004052, 80: 0.004322, 85: 0.004592, 90: 0.004862, 95: 0.005133, 100: 0.005403 },
+            35.0: { 60: 0.003149, 75: 0.003936, 80: 0.004199, 85: 0.004461, 90: 0.004724, 95: 0.004986, 100: 0.005248 },
+            36.0: { 60: 0.003062, 75: 0.003827, 80: 0.004082, 85: 0.004337, 90: 0.004592, 95: 0.004847, 100: 0.011481 },
+            37.0: { 60: 0.002979, 75: 0.003724, 80: 0.003972, 85: 0.004220, 90: 0.004468, 95: 0.004716, 100: 0.004965 },
+            38.0: { 60: 0.002900, 75: 0.003626, 80: 0.003867, 85: 0.004109, 90: 0.004351, 95: 0.004592, 100: 0.004834 },
+            39.0: { 60: 0.002826, 75: 0.003533, 80: 0.003768, 85: 0.004004, 90: 0.004239, 95: 0.004475, 100: 0.004710 },
+            40.0: { 60: 0.002755, 75: 0.003444, 80: 0.003674, 85: 0.003904, 90: 0.004133, 95: 0.004363, 100: 0.004592 },
+            41.0: { 60: 0.002688, 75: 0.003360, 80: 0.003584, 85: 0.003808, 90: 0.004032, 95: 0.004256, 100: 0.004480 },
+            42.0: { 60: 0.002624, 75: 0.003280, 80: 0.003499, 85: 0.003718, 90: 0.003936, 95: 0.004155, 100: 0.004374 },
+            43.0: { 60: 0.002563, 75: 0.003204, 80: 0.003418, 85: 0.003631, 90: 0.003845, 95: 0.004058, 100: 0.004272 },
+            44.0: { 60: 0.002505, 75: 0.003131, 80: 0.003340, 85: 0.003549, 90: 0.003757, 95: 0.003966, 100: 0.011481 },
+            45.0: { 60: 0.002449, 75: 0.003062, 80: 0.003266, 85: 0.003470, 90: 0.003674, 95: 0.003878, 100: 0.004082 },
+            46.0: { 60: 0.002396, 75: 0.002995, 80: 0.003195, 85: 0.003394, 90: 0.003594, 95: 0.003794, 100: 0.003993 },
+            47.0: { 60: 0.002345, 75: 0.002931, 80: 0.003127, 85: 0.003322, 90: 0.003518, 95: 0.003713, 100: 0.003908 },
+            48.0: { 60: 0.002296, 75: 0.002870, 80: 0.003062, 85: 0.003253, 90: 0.003444, 95: 0.003636, 100: 0.003827 },
+            49.0: { 60: 0.002249, 75: 0.002812, 80: 0.002999, 85: 0.003187, 90: 0.003374, 95: 0.003561, 100: 0.003749 },
+            50.0: { 60: 0.002204, 75: 0.002755, 80: 0.002939, 85: 0.03123, 90: 0.003306, 95: 0.003490, 100: 0.003674 }
+        };
+
+        function interpZinco(x, x1, x2, y1, y2) {
+            if (x1 === x2) return y1;
+            return y1 + ((x - x1) / (x2 - x1)) * (y2 - y1);
+        }
+
+        function calcularZinco() {
+            const divRes = document.getElementById("resultadoZinco");
+            const eInput = document.getElementById("espessuraZinco").value;
+            const mInput = document.getElementById("micragemZinco").value;
+            const pInput = document.getElementById("pesoNegroZinco").value;
+
+            if (!eInput || !mInput || !pInput) {
+                divRes.style.display = "block";
+                divRes.innerHTML = "<div class='erro'>⚠️ Preencha todos os campos.</div>";
+                return;
+            }
+
+            const e = parseFloat(eInput.replace(',', '.'));
+            const m = parseFloat(mInput.replace(',', '.'));
+            const peso = parseFloat(pInput.replace(',', '.'));
+
+            const espessuras = Object.keys(tabelaZinco).map(Number).sort((a,b)=>a-b);
+            const minE = espessuras[0];
+            const maxE = espessuras[espessuras.length - 1];
+
+            if (e < minE || e > maxE) {
+                divRes.style.display = "block";
+                divRes.innerHTML = `<div class='erro'>⚠️ Espessura fora da tabela (${minE}-${maxE}mm).</div>`;
+                return;
+            }
+
+            function getCoef(esp) {
+                const linha = tabelaZinco[esp];
+                const micragens = Object.keys(linha).map(Number).sort((a,b)=>a-b);
+                let m1 = micragens.filter(x => x <= m).pop();
+                let m2 = micragens.find(x => x >= m);
+                if (m1 === undefined) m1 = m2 = micragens[0];
+                if (m2 === undefined) m2 = m1 = micragens[micragens.length - 1];
+                return interpZinco(m, m1, m2, linha[m1], linha[m2]);
+            }
+
+            const e1 = espessuras.filter(x => x <= e).pop();
+            const e2 = espessuras.find(x => x >= e);
+            const coef1 = getCoef(e1);
+            const coef2 = getCoef(e2);
+            const percentual = (e1 === e2) ? coef1 : interpZinco(e, e1, e2, coef1, coef2);
+            const zincoAderido = peso * percentual;
+            const pesoFinal = peso + zincoAderido;
+
+            divRes.style.display = "block";
+            divRes.innerHTML = `
+                <p>Coeficiente: <span class="coef-info">${(percentual * 100).toFixed(4)}%</span></p>
+                <p>Zinco Aderido: <span>${zincoAderido.toFixed(2)} kg</span></p>
+                <div style="height:1px; background:#e2e8f0; margin:15px 0;"></div>
+                <p>PESO FINAL: <span class="valor-destaque-zinco">${pesoFinal.toFixed(2)} kg</span></p>
+            `;
+        }
+    </script>
+</body>
+</html>
