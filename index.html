@@ -459,7 +459,6 @@
         </div>
     </header>
 
-    <!-- Barra de Navegação Exclusiva por Abas -->
     <div class="tabs-container">
         <button class="tab-btn active" onclick="switchTab('tab-centrifuga')">⚙️ Peso Centrífuga</button>
         <button class="tab-btn" onclick="switchTab('tab-caldeira')">🔥 Tempo Caldeira</button>
@@ -469,7 +468,6 @@
 
     <div class="main-container">
 
-        <!-- ABA 1: PESO CENTRÍFUGA -->
         <div id="tab-centrifuga" class="tab-content active">
             <h2>Cálculo de Centrífuga - Por Tipo de Lote</h2>
             <div class="grid-layout">
@@ -490,6 +488,15 @@
                         
                         <label for="lotesNovas">Pesos em Negro (Separados por vírgula)</label>
                         <textarea id="lotesNovas" placeholder="Ex: 1120, 1150..."></textarea>
+                    </div>
+
+                    <div class="group-box">
+                        <span class="group-title">Lotes Cesta de Varões (132kg)</span>
+                        <label for="numCestasVaroes">Quantidade de Cestas</label>
+                        <input type="number" id="numCestasVaroes" placeholder="Ex: 3" oninput="atualizarResumoCent()" />
+                        
+                        <label for="lotesVaroes">Pesos em Negro (Separados por vírgula)</label>
+                        <textarea id="lotesVaroes" placeholder="Ex: 500, 520, 490..."></textarea>
                     </div>
 
                     <label for="fatorZinco">Fator de Zinco</label>
@@ -513,7 +520,6 @@
             </div>
         </div>
 
-        <!-- ABA 2: TEMPO CALDEIRA -->
         <div id="tab-caldeira" class="tab-content">
             <div class="single-column-layout">
                 <h2 style="border-left-color: var(--accent-orange);">Controle Caldeira</h2>
@@ -539,7 +545,6 @@
             </div>
         </div>
 
-        <!-- ABA 3: TEMPO CENTRÍFUGA (CICLOS COPIADO) -->
         <div id="tab-ciclos" class="tab-content">
             <h2>Controle de Ciclos Centrífuga</h2>
             <div class="ciclos-container">
@@ -557,7 +562,6 @@
             </button>
         </div>
 
-        <!-- ABA 4: ZINCO ADERIDO -->
         <div id="tab-zinco" class="tab-content">
             <div class="single-column-layout">
                 <h2>Zinco Aderido</h2>
@@ -589,7 +593,6 @@
 
     </div>
 
-    <!-- Footer Flutuante para os Minutos de Ciclo -->
     <div class="total-footer-fixed" id="totalMinutesFooter">
         Total Acumulado: <span id="totalMinutesSpan">0 minutos</span>
     </div>
@@ -613,12 +616,15 @@
         }
 
         // ========================================================
-        // ABA 1: PESO CENTRÍFUGA
+        // ABA 1: PESO CENTRÍFUGA (ATUALIZADA)
         // ========================================================
         function atualizarResumoCent() {
             const nAntigas = parseFloat(document.getElementById('numCestasAntigas').value) || 0;
             const nNovas = parseFloat(document.getElementById('numCestasNovas').value) || 0;
-            const totalTara = (nAntigas * 255) + (nNovas * 440);
+            const nVaroes = parseFloat(document.getElementById('numCestasVaroes').value) || 0;
+            
+            // Lógica mantida e expandida com a tara de 132kg
+            const totalTara = (nAntigas * 255) + (nNovas * 440) + (nVaroes * 132);
             document.getElementById('pesoTotalTara').innerText = totalTara.toFixed(2);
         }
 
@@ -633,11 +639,14 @@
         function calcularCentrifuga() {
             const nAntigas = parseFloat(document.getElementById('numCestasAntigas').value) || 0;
             const nNovas = parseFloat(document.getElementById('numCestasNovas').value) || 0;
+            const nVaroes = parseFloat(document.getElementById('numCestasVaroes').value) || 0;
             const factor = parseFloat(document.getElementById('fatorZinco').value) || 1;
 
             const pesosAntigasRaw = document.getElementById('lotesAntigas').value;
             const pesosNovasRaw = document.getElementById('lotesNovas').value;
+            const pesosVaroesRaw = document.getElementById('lotesVaroes').value;
 
+            // Cálculos individuais mantendo o padrão
             const totalNegroAntigas = somarPesosCent(pesosAntigasRaw);
             const taraAntigas = nAntigas * 255;
             const liquidoAntigas = Math.max(0, totalNegroAntigas - taraAntigas);
@@ -646,11 +655,16 @@
             const taraNovas = nNovas * 440;
             const liquidoNovas = Math.max(0, totalNegroNovas - taraNovas);
 
-            const totalNegroGeral = totalNegroAntigas + totalNegroNovas;
-            const totalTaraGeral = taraAntigas + taraNovas;
-            const totalLiquidoGeral = liquidoAntigas + liquidoNovas;
+            const totalNegroVaroes = somarPesosCent(pesosVaroesRaw);
+            const taraVaroes = nVaroes * 132;
+            const liquidoVaroes = Math.max(0, totalNegroVaroes - taraVaroes);
+
+            // Consolidação Geral
+            const totalNegroGeral = totalNegroAntigas + totalNegroNovas + totalNegroVaroes;
+            const totalTaraGeral = taraAntigas + taraNovas + taraVaroes;
+            const totalLiquidoGeral = liquidoAntigas + liquidoNovas + liquidoVaroes;
             
-            if (totalLiquidoGeral === 0 && (pesosAntigasRaw || pesosNovasRaw)) {
+            if (totalLiquidoGeral === 0 && (pesosAntigasRaw || pesosNovasRaw || pesosVaroesRaw)) {
                 document.getElementById('resultadoCentrifuga').innerHTML = "<p class='erro'>⚠️ Peso das cestas maior que o peso informado ou campos vazios.</p>";
                 return;
             }
@@ -677,6 +691,16 @@
                     <div class="res-item"><span>Total Negro:</span> <span>${totalNegroNovas.toFixed(2)} kg</span></div>
                     <div class="res-item"><span>Tara (${nNovas} unid):</span> <span>-${taraNovas.toFixed(2)} kg</span></div>
                     <div class="res-item"><span>Líquido Negro:</span> <strong>${liquidoNovas.toFixed(2)} kg</strong></div>
+                </div>`;
+            }
+
+            if (nVaroes > 0 || totalNegroVaroes > 0) {
+                html += `
+                <div style="margin-bottom: 15px;">
+                    <small style="color:var(--primary); font-weight:bold;">CESTA DE VARÕES (132kg)</small>
+                    <div class="res-item"><span>Total Negro:</span> <span>${totalNegroVaroes.toFixed(2)} kg</span></div>
+                    <div class="res-item"><span>Tara (${nVaroes} unid):</span> <span>-${taraVaroes.toFixed(2)} kg</span></div>
+                    <div class="res-item"><span>Líquido Negro:</span> <strong>${liquidoVaroes.toFixed(2)} kg</strong></div>
                 </div>`;
             }
 
@@ -877,7 +901,7 @@
             41.0: { 60: 0.002688, 75: 0.003360, 80: 0.003584, 85: 0.003808, 90: 0.004032, 95: 0.004256, 100: 0.004480 },
             42.0: { 60: 0.002624, 75: 0.003280, 80: 0.003499, 85: 0.003718, 90: 0.003936, 95: 0.004155, 100: 0.004374 },
             43.0: { 60: 0.002563, 75: 0.003204, 80: 0.003418, 85: 0.003631, 90: 0.003845, 95: 0.004058, 100: 0.004272 },
-            44.0: { 60: 0.002505, 75: 0.003131, 80: 0.003340, 85: 0.003549, 90: 0.003757, 95: 0.003966, 100: 0.011481 },
+            44.0: { 60: 0.002505, 75: 0.011481, 80: 0.003340, 85: 0.003549, 90: 0.003757, 95: 0.003966, 100: 0.011481 },
             45.0: { 60: 0.002449, 75: 0.003062, 80: 0.003266, 85: 0.003470, 90: 0.003674, 95: 0.003878, 100: 0.004082 },
             46.0: { 60: 0.002396, 75: 0.002995, 80: 0.003195, 85: 0.003394, 90: 0.003594, 95: 0.003794, 100: 0.003993 },
             47.0: { 60: 0.002345, 75: 0.002931, 80: 0.003127, 85: 0.003322, 90: 0.003518, 95: 0.003713, 100: 0.003908 },
